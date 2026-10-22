@@ -1,0 +1,2 @@
+# Azuredemo
+Azure Demo practice
