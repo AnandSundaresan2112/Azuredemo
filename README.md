@@ -1,6 +1,9 @@
 # Azuredemo
 Azure Demo practice
 
+Microsoft lab exercise link - https://microsoftlearning.github.io/Configure-secure-access-to-workloads-with-Azure-virtual-networking-services/
+
+
 # Configure secure access to workloads with Azure virtual networking services
 
 Link to demonstrations and labs **[HTML version](https://microsoftlearning.github.io/Configure-secure-access-to-workloads-with-Azure-virtual-networking-services/)**.
