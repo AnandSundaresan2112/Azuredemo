@@ -29,276 +29,28 @@
         "networkInterfaces_VM2_nic_name": {
             "defaultValue": "VM2-nic",
             "type": "String"
+        },
+        "adminUsername": {
+            "defaultValue": "AzureAdmin",
+            "type": "String"
+        },
+        "adminPassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Password for the local administrator account on both VMs."
+            }
         }
     },
-    "functions": [],
-    "variables": {},
+    "variables": {
+        "location": "southindia",
+        "vmSize": "Standard_B2ats_v2"
+    },
     "resources": [
-         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2022-07-01",
-            "name": "[parameters('publicIPAddresses_VM1_ip_name')]",
-            "location": "southindia",
-            "sku": {
-                "name": "Standard",
-                "tier": "Regional"
-            },
-            "properties": {
-                "ipAddress": "40.87.123.79",
-                "publicIPAddressVersion": "IPv4",
-                "publicIPAllocationMethod": "Static",
-                "idleTimeoutInMinutes": 4,
-                "ipTags": []
-            }
-        },
-        {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2022-07-01",
-            "name": "[parameters('publicIPAddresses_VM2_ip_name')]",
-            "location": "southindia",
-            "sku": {
-                "name": "Standard",
-                "tier": "Regional"
-            },
-            "properties": {
-                "ipAddress": "40.87.123.72",
-                "publicIPAddressVersion": "IPv4",
-                "publicIPAllocationMethod": "Static",
-                "idleTimeoutInMinutes": 4,
-                "ipTags": []
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2022-08-01",
-            "name": "[parameters('virtualMachines_VM1_name')]",
-            "location": "southindia",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM1_nic_name'))]"
-            ],
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "Standard_DS1_v2"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "Canonical",
-                        "offer": "UbuntuServer",
-                        "sku": "18.04-LTS",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "osType": "Linux",
-                        "name": "[concat(parameters('virtualMachines_VM1_name'), '_disk1_6a38f4133b104e6fb10ee60804d2902b')]",
-                        "createOption": "FromImage",
-                        "caching": "ReadWrite",
-                        "managedDisk": {
-                            "storageAccountType": "Standard_LRS"                        },
-                        "deleteOption": "Detach",
-                        "diskSizeGB": 30
-                    },
-                    "dataDisks": []
-                },
-                "osProfile": {
-                    "computerName": "[parameters('virtualMachines_VM1_name')]",
-                    "adminUsername": "AzureAdmin",
-                    "adminpassword": "[concat('A1', uniqueString(resourceGroup().id))]",
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": false,
-                        "patchSettings": {
-                            "patchMode": "ImageDefault",
-                            "assessmentMode": "ImageDefault"
-                        },
-                        "enableVMAgentPlatformUpdates": false
-                    },
-                    "secrets": []
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM1_nic_name'))]",
-                            "properties": {
-                                "primary": true
-                            }
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2022-08-01",
-            "name": "[parameters('virtualMachines_VM2_name')]",
-            "location": "southindia",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM2_nic_name'))]"
-            ],
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "Standard_DS1_v2"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "Canonical",
-                        "offer": "UbuntuServer",
-                        "sku": "18.04-LTS",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "osType": "Linux",
-                        "name": "[concat(parameters('virtualMachines_VM2_name'), '_disk1_a76711e00aa04f15a1a08e59308344ed')]",
-                        "createOption": "FromImage",
-                        "caching": "ReadWrite",
-                        "managedDisk": {
-                            "storageAccountType": "Standard_LRS"
-                        },
-                        "deleteOption": "Detach",
-                        "diskSizeGB": 30
-                    },
-                    "dataDisks": []
-                },
-                "osProfile": {
-                    "computerName": "[parameters('virtualMachines_VM2_name')]",
-                    "adminUsername": "AzureAdmin",
-                    "adminpassword": "[concat('A1', uniqueString(resourceGroup().id))]",
-                    "linuxConfiguration": {
-                        "disablePasswordAuthentication": false,
-                        "patchSettings": {
-                            "patchMode": "ImageDefault",
-                            "assessmentMode": "ImageDefault"
-                        },
-                        "enableVMAgentPlatformUpdates": false
-                    },
-                    "secrets": []
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM2_nic_name'))]",
-                            "properties": {
-                                "primary": true
-                            }
-                        }
-                    ]
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2022-07-01",
-            "name": "[parameters('networkInterfaces_VM1_nic_name')]",
-            "location": "southindia",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM1_ip_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_app_vnet_name'), 'frontend')]"
-            ],
-            "kind": "Regular",
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM1_nic_name')), '/ipConfigurations/ipconfig1')]",
-                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
-                        "properties": {
-                            "provisioningState": "Succeeded",
-                            "privateIPAddress": "10.1.0.4",
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM1_ip_name'))]"
-                            },
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_app_vnet_name'), 'frontend')]"
-                            },
-                            "primary": true,
-                            "privateIPAddressVersion": "IPv4"
-                        }
-                    }
-                ],
-                "dnsSettings": {
-                    "dnsServers": []
-                },
-                "enableAcceleratedNetworking": false,
-                "enableIPForwarding": false,
-                "disableTcpStateTracking": false,
-                "nicType": "Standard"
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2022-07-01",
-            "name": "[parameters('networkInterfaces_VM2_nic_name')]",
-            "location": "southindia",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM2_ip_name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_app_vnet_name'), 'backend')]"
-            ],
-            "kind": "Regular",
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM2_nic_name')), '/ipConfigurations/ipconfig1')]",
-                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
-                        "properties": {
-                            "provisioningState": "Succeeded",
-                            "privateIPAddress": "10.1.1.4",
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM2_ip_name'))]"
-                            },
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_app_vnet_name'), 'backend')]"
-                            },
-                            "primary": true,
-                            "privateIPAddressVersion": "IPv4"
-                        }
-                    }
-                ],
-                "dnsSettings": {
-                    "dnsServers": []
-                },
-                "enableAcceleratedNetworking": false,
-                "enableIPForwarding": false,
-                "disableTcpStateTracking": false,
-                "nicType": "Standard"
-            }
-        },
-        {
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2022-07-01",
-            "name": "[concat(parameters('virtualNetworks_app_vnet_name'), '/backend')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_app_vnet_name'))]"
-            ],
-            "properties": {
-                "addressPrefix": "10.1.1.0/24",
-                "delegations": [],
-                "privateEndpointNetworkPolicies": "Disabled",
-                "privateLinkServiceNetworkPolicies": "Enabled"
-            }
-        },
-        {
-            "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2022-07-01",
-            "name": "[concat(parameters('virtualNetworks_app_vnet_name'), '/frontend')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_app_vnet_name'))]"
-            ],
-            "properties": {
-                "addressPrefix": "10.1.0.0/24",
-                "delegations": [],
-                "privateEndpointNetworkPolicies": "Disabled",
-                "privateLinkServiceNetworkPolicies": "Enabled"
-            }
-        },
         {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2022-07-01",
             "name": "[parameters('virtualNetworks_app_vnet_name')]",
-            "location": "southindia",
-            "dependsOn": [
-
-            ],
+            "location": "[variables('location')]",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -314,31 +66,235 @@
                 "subnets": [
                     {
                         "name": "frontend",
-                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_app_vnet_name'), 'frontend')]",
                         "properties": {
                             "addressPrefix": "10.1.0.0/24",
-                            "delegations": [],
                             "privateEndpointNetworkPolicies": "Disabled",
                             "privateLinkServiceNetworkPolicies": "Enabled"
-                        },
-                        "type": "Microsoft.Network/virtualNetworks/subnets"
+                        }
                     },
                     {
                         "name": "backend",
-                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_app_vnet_name'), 'backend')]",
                         "properties": {
                             "addressPrefix": "10.1.1.0/24",
-                            "delegations": [],
                             "privateEndpointNetworkPolicies": "Disabled",
                             "privateLinkServiceNetworkPolicies": "Enabled"
-                        },
-                        "type": "Microsoft.Network/virtualNetworks/subnets"
+                        }
                     }
                 ],
-                "virtualNetworkPeerings": [],
                 "enableDdosProtection": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('publicIPAddresses_VM1_ip_name')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('publicIPAddresses_VM2_ip_name')]",
+            "location": "[variables('location')]",
+            "sku": {
+                "name": "Standard",
+                "tier": "Regional"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('networkInterfaces_VM1_nic_name')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM1_ip_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_app_vnet_name'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM1_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_app_vnet_name'), 'frontend')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('networkInterfaces_VM2_nic_name')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM2_ip_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_app_vnet_name'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM2_ip_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_app_vnet_name'), 'backend')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2024-07-01",
+            "name": "[parameters('virtualMachines_VM1_name')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM1_nic_name'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "ubuntu-24_04-lts",
+                        "sku": "server",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_VM1_name'), '-osdisk')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Standard_LRS"
+                        },
+                        "deleteOption": "Delete",
+                        "diskSizeGB": 30
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_VM1_name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false,
+                        "patchSettings": {
+                            "patchMode": "ImageDefault",
+                            "assessmentMode": "ImageDefault"
+                        },
+                        "provisionVMAgent": true
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM1_nic_name'))]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2024-07-01",
+            "name": "[parameters('virtualMachines_VM2_name')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM2_nic_name'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "ubuntu-24_04-lts",
+                        "sku": "server",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_VM2_name'), '-osdisk')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Standard_LRS"
+                        },
+                        "deleteOption": "Delete",
+                        "diskSizeGB": 30
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_VM2_name')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false,
+                        "patchSettings": {
+                            "patchMode": "ImageDefault",
+                            "assessmentMode": "ImageDefault"
+                        },
+                        "provisionVMAgent": true
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_VM2_nic_name'))]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                }
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "VM1PublicIP": {
+            "type": "String",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM1_ip_name')), '2022-07-01').ipAddress]"
+        },
+        "VM2PublicIP": {
+            "type": "String",
+            "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_VM2_ip_name')), '2022-07-01').ipAddress]"
+        }
+    }
 }
